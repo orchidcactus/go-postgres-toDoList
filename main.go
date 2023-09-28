@@ -13,6 +13,7 @@ import (
 	
 	"encoding/json"
 	"strconv"
+	"github.com/go-redis/redis"
 )
 
 const (
@@ -55,7 +56,23 @@ func CreateItem(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(result.Value)
 	
+	// Set the element in the redis cache when user creates a new entry
+ 	models.SetInCache(models.REDIS, todo.TaskId, todo)
+ 	json.NewEncoder(w).Encode(todo)
 }
+
+
+// func CreateTodo(w http.ResponseWriter, r *http.Request) {
+// 	w.Header().Set("Content-Type", "application/json")
+// 	var todo models.ToDo
+// 	json.NewDecoder(r.Body).Decode(&todo)
+// 	fmt.Print(todo)
+// 	models.DB.Create(&todo)
+
+// 	// Set the element in the redis cache when user creates a new entry
+// 	models.SetInCache(models.REDIS, todo.TaskId, todo)
+// 	json.NewEncoder(w).Encode(todo)
+// }
 
 func UpdateItem(w http.ResponseWriter, r *http.Request) {
 	
